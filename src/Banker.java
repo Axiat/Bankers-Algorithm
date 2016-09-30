@@ -47,7 +47,7 @@ public class Banker {
      * @return
      */
     public int remaining(){
-        return 0;
+        return nUnits;
     }
 
 }
