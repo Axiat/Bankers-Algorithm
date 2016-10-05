@@ -1,7 +1,7 @@
 /**
  * Created by nate on 9/29/16.
  */
-public class Client extends Thread{
+public class  Client extends Thread{
 
     Banker banker;
     int nUnits;

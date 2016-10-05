@@ -1,4 +1,3 @@
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -15,20 +14,22 @@ public class Banker {
 
     /**
      * The current  thread (available via static method Thread. currentThread())
-     * attempts to register a claim for up to nUnits units of resource.
+     * attempts to register a remainingClaim for up to nUnits units of resource.
      * @param claim
      */
-    public void setClaim(int claim){
-        /*System.exits if a claim is already registered with that thread,
-        *  or the claim is not positive or if the claim is greater than
+    public synchronized void setClaim(int claim){
+        /*System.exits if a remainingClaim is already registered with that thread,
+        *  or the remainingClaim is not positive or if the remainingClaim is greater than
         *  the available resources*/
         if(claim < 0 || claim > nUnits || allocatedResources.contains(Thread.currentThread().getName())){
             System.exit(1);
         }
-        else{
-            String currentName = Thread.currentThread().getName();
-            allocatedResources.put(currentName,new Claim(claim,0));
-        }
+
+        nUnits -= claim; // subtract remainingClaim from available resources
+        String currentName = Thread.currentThread().getName();
+        allocatedResources.put(currentName,new Claim(claim,0));
+        System.out.println("Thread " + currentName + " sets a remainingClaim for: " + claim + " nUnits" );
+
     }
 
     /**
@@ -36,7 +37,19 @@ public class Banker {
      * @param nUnits
      * @return
      */
-    public boolean request(int nUnits){
+    public synchronized boolean request(int nUnits){
+        String currentName = Thread.currentThread().getName();
+        if( !(nUnits > 0|| nUnits < allocatedResources.get(currentName).getRemainingClaim() || allocatedResources.contains(currentName)    )){
+            System.exit(1);
+        }
+
+        System.out.println("Thread " + currentName + " requests " + nUnits + " units" );
+
+        // check if allocation is a safe state
+
+
+
+
         return false; // TODO: remove later
     }
 
@@ -53,15 +66,16 @@ public class Banker {
      * @return
      */
     public int allocated(){
-        return 0; // TODO: remove later
+        return allocatedResources.get(Thread.currentThread().getName()).getCurrentAllocation();
     }
 
     /**
-     * Returns the number of units remaining in the current thread's claim.
+     * Returns the number of units remaining in the current thread's remainingClaim.
      * @return
      */
     public int remaining(){
-        return nUnits;
+        return allocatedResources.get(Thread.currentThread().getName()).getRemainingClaim();
+
     }
 
 }
@@ -70,24 +84,23 @@ public class Banker {
 
 /**
  * Created by nate on 10/3/16.
- * This class is used by the banker to keep track of a threads current claim
- * and remaining claim.
+ * This class is used by the banker to keep track of a threads current remainingClaim
+ * and remaining remainingClaim.
  */
 class Claim {
     private final int currentAllocation;
-    private final int claim;
+    private final int remainingClaim;
 
     public Claim( int claim, int currentAllocation){
         this.currentAllocation = currentAllocation;
-        this.claim = claim;
+        this.remainingClaim = claim;
     }
-
 
     public int getCurrentAllocation() {
         return currentAllocation;
     }
 
-    public int getClaim() {
-        return claim;
+    public int getRemainingClaim() {
+        return remainingClaim;
     }
 }
