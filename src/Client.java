@@ -31,11 +31,9 @@ class  Client extends Thread{
      */
     @Override
     public void run() {
-
         banker.setClaim(nUnits);
 
         for(int i=0; i< nRequests; i++){
-
 
             if(banker.remaining() == 0){
                 if(banker.allocated() == 0){
@@ -52,6 +50,7 @@ class  Client extends Thread{
                 int rand = (int)(Math.round(Math.random()*maxSleepMillis) + minSleepMillis);
                 Thread.sleep(rand);
             } catch (InterruptedException e) {  e.printStackTrace();  }
+
         }
     }
 }
