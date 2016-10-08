@@ -14,7 +14,7 @@ class Driver {
     private static final int maxSleepMillis = 300;
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Banker banker = new Banker(bankResources);
 
